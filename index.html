@@ -1,66 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
+  <!-- The following code has been developed by students and/or researchers of the Freshman Research Initiative, DIY Diagnostics Stream at The University of Texas at Austin.  This code is shared for demonstration purposes and should not be considered a product -- it is for entertainment purposes only.  Any user of this code does so at their own risk. Members of the DIY Stream, FRI, and The University of Texas system are not liable for anything related to this code. -->
+  
+  THIS CODE SHOULD NOT BE USED TO DIAGNOSE ANY KIND OF MEDICAL CONDITION.
+  
+  Further Information:
+  http://cns.utexas.edu/fri
+  
+  Research Educator:
+  Timothy E. Riedel
+  triedel@utexas.edu
+  
+  Authors in chronological order of contribution:
+  Author 1: Zara Illston
+  Author 2: Gabriela Garcia
+  Author 3: Amaris Asamoah
+  Author 4: Ria Manchanda 
+  Author 5: Olivia Lopez
+  Author 6: Timothy E. Riedel
+  
+  References:
+  http://docs.webplatform.org/wiki/concepts/programming/drawing_images_onto_canvas#Loading_the_image_programmatically
+  http://www.html5rocks.com/en/tutorials/file/dndfiles/
+  http://www.w3.org/TR/FileAPI/
+  http://mobilehtml5.org/
+  http://stackoverflow.com/questions/11929099/html5-canvas-drawimage-ratio-bug-ios
+  
+  Brief Description of Goal of Code:
+  The goal of this code is to create a website that uploads pictures of LAMP and determines if the reaction has happened (positive), hasn’t happened yet (negative), or in the process of reacting (intermediate). This will help people determine where the LAMP samples are in the reaction process.
+ 
+  Known Issues:
+  The picture must be taken of essentially only the sample because the program reads the RGB from the middle of the uploaded photo, so if the entire tube is uploaded, it will read as undetermined.
+
 <head>
-  <meta charset="UTF-8">
-  <title>LAMP Diagnostic Analyzer</title>
+  <meta charset="UTF-8"> // Set character encoding to UTF-8 for universal character support
+  <title>LAMP Diagnostic Analyzer</title> // Set the title of the web page shown in the browser tab
   <style>
-    body { font-family: Arial; text-align: center; padding: 20px; }
-    canvas { border: 1px solid #ccc; margin-top: 10px; }
-    #result { font-size: 1.5em; margin-top: 20px; font-weight: bold; }
+    body { font-family: Arial; text-align: center; padding: 20px; } /* Style the body with font, center alignment, and padding */
+    canvas { border: 1px solid #ccc; margin-top: 10px; } /* Add a border and top margin to the canvas element */
+    #result { font-size: 1.5em; margin-top: 20px; font-weight: bold; } /* Style the result div to be bold and larger in size */
     #colorBox {
-      width: 50px;
-      height: 50px;
-      margin: 10px auto;
-      border: 2px solid #000;
+      width: 50px; /* Set width of color box */
+      height: 50px; /* Set height of color box */
+      margin: 10px auto; /* Center the box with margin */
+      border: 2px solid #000; /* Add a solid black border */
     }
   </style>
 </head>
-<body>
-  <h1>Colorimetric LAMP Diagnostic Analyzer</h1>
-  <p>Upload a photo of your LAMP test to determine the result.</p>
-  <input type="file" id="imageUpload" accept="image/*"><br>
-  <canvas id="canvas" width="300" height="300"></canvas>
-  <div id="colorBox"></div>
-  <div id="result"></div>
+<body> // Begin the body of the web page
+  <h1>Colorimetric LAMP Diagnostic Analyzer</h1> // Heading text for the tool
+  <p>Upload a photo of your LAMP test to determine the result.</p> // Instruction for the user
+  <input type="file" id="imageUpload" accept="image/*"><br> // File input to upload images, limited to image files
+  <canvas id="canvas" width="300" height="300"></canvas> // Canvas for drawing the uploaded image
+  <div id="colorBox"></div> // Box to display the detected color
+  <div id="result"></div> // Div to display the analysis result
+
 
   <script>
-    const upload = document.getElementById('imageUpload');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const result = document.getElementById('result');
-    const colorBox = document.getElementById('colorBox');
+    const upload = document.getElementById('imageUpload'); // Get the file input element
+    const canvas = document.getElementById('canvas'); // Get the canvas element
+    const ctx = canvas.getContext('2d'); // Get the 2D drawing context of the canvas
+    const result = document.getElementById('result'); // Get the result display element
+    const colorBox = document.getElementById('colorBox'); // Get the color box element
 
-    upload.addEventListener('change', function () {
-      const file = this.files[0];
-      if (!file) return;
+    upload.addEventListener('change', function () {  /* this item triggers when a file is uploaded */
 
-      const reader = new FileReader();
+      const file = this.files[0]; /* grabs the first file selected by the user */
+      if (!file) return; // exit early if no file is selected 
+
+      const reader = new FileReader(); /* create a filereader object to read the image as a DataURL */
       reader.onload = function (e) {
-        const img = new Image();
+        const img = new Image(); /* creates a new image element in memory */
         img.onload = function () {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.clearRect(0, 0, canvas.width, canvas.height); /* clear any previous image drawn on the canvas */
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height); /* draw the new image to fill the 300x300 canvas */ 
 
-          const centerX = canvas.width / 2;
+          const centerX = canvas.width / 2; // set the center point of the canvas to analyze the region around it
           const centerY = canvas.height / 2;
-          const regionSize = 50;
+          const regionSize = 50; // defines the size of the square region we want to analyze 
           const imageData = ctx.getImageData(centerX - regionSize / 2, centerY - regionSize / 2, regionSize, regionSize);
-          const pixels = imageData.data;
-
+  // extracts the image data from the canvas context at the center square
+  // returned object contains raw RGB values in a flat array
+          const pixels = imageData.data; // access the array of pixel data 
+// accumulators for red, green, and blue channels 
           let r = 0, g = 0, b = 0;
+// calculate the total number of pixels 
           const totalPixels = pixels.length / 4;
-
+// summing up red, green, and blue values 
           for (let i = 0; i < pixels.length; i += 4) {
-            r += pixels[i];
-            g += pixels[i + 1];
-            b += pixels[i + 2];
+            r += pixels[i]; // red channel 
+            g += pixels[i + 1]; // green channel 
+            b += pixels[i + 2]; // blue channel 
           }
-
+// compute average color values by dividing by total pixels
           r = Math.round(r / totalPixels);
           g = Math.round(g / totalPixels);
           b = Math.round(b / totalPixels);
 
-          console.log(`Average RGB: (${r}, ${g}, ${b})`);  // Log the RGB values
+        console.log(`Average RGB: (${r}, ${g}, ${b})`);  // Log the RGB values
           
           // Update the color box background with the detected color
           colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
