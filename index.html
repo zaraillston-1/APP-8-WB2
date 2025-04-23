@@ -75,7 +75,7 @@
           else if (diagnosis.includes('Pink')) result.style.color = 'deeppink';
           else result.style.color = 'gray'; // Default for 'uncertain'
         };
-        img.src = e.target.result;
+        img.src = e.target.result;  // Set the image source to the uploaded file
       };
       reader.readAsDataURL(file);
     });
