@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LAMP Diagnostic Analyzer</title>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 20px; }
+    canvas { border: 1px solid #ccc; margin-top: 10px; }
+    #result { font-size: 1.5em; margin-top: 20px; font-weight: bold; }
+    #colorBox {
+      width: 50px;
+      height: 50px;
+      margin: 10px auto;
+      border: 2px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Colorimetric LAMP Diagnostic Analyzer</h1>
+  <p>Upload a photo of your LAMP test to determine the result.</p>
+  <input type="file" id="imageUpload" accept="image/*"><br>
+  <canvas id="canvas" width="300" height="300"></canvas>
+  <div id="colorBox"></div>
+  <div id="result"></div>
+
+  <script>
+    const upload = document.getElementById('imageUpload');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const result = document.getElementById('result');
+    const colorBox = document.getElementById('colorBox');
+
+    upload.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          const regionSize = 50;
+          const imageData = ctx.getImageData(centerX - regionSize / 2, centerY - regionSize / 2, regionSize, regionSize);
+          const pixels = imageData.data;
+
+          let r = 0, g = 0, b = 0;
+          const totalPixels = pixels.length / 4;
+
+          for (let i = 0; i < pixels.length; i += 4) {
+            r += pixels[i];
+            g += pixels[i + 1];
+            b += pixels[i + 2];
+          }
+
+          r = Math.round(r / totalPixels);
+          g = Math.round(g / totalPixels);
+          b = Math.round(b / totalPixels);
+
+          console.log(`Average RGB: (${r}, ${g}, ${b})`);
+
+          colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+
+          const diagnosis = interpretColor(r, g, b);
+          result.textContent = `Diagnostic Result: ${diagnosis}`;
+
+          if (diagnosis.includes('Yellow')) result.style.color = 'darkorange';
+          else if (diagnosis.includes('Orange')) result.style.color = 'orangered';
+          else if (diagnosis.includes('Pink')) result.style.color = 'deeppink';
+          else result.style.color = 'gray';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function interpretColor(r, g, b) {
+      // Positive Yellow: bright, high red and green, low blue
+      if (r > 180 && g > 180 && b < 130) {
+        return 'Positive (Yellow)';
+      }
+      // Intermediate Orange: red high, green medium-high, blue low
+      if (r > 180 && g > 120 && g <= 180 && b < 130) {
+        return 'Intermediate (Orange)';
+      }
+      // Negative Pink: red high, green low, blue high
+      if (r > 160 && g < 140 && b > 140) {
+        return 'Negative (Pink)';
+      }
+      return 'Uncertain';
+    }
+  </script>
+</body>
+</html>
