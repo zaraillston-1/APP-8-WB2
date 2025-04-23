@@ -67,7 +67,7 @@
 
           // Interpret the color to determine the diagnosis
           const diagnosis = interpretColor(r, g, b);
-          result.textContent = `Diagnostic Result: ${diagnosis}`;
+          result.textContent = `Diagnostic Result: ${diagnosis}`; // Show the result text
 
           // Change the text color based on the result
           if (diagnosis.includes('Yellow')) result.style.color = 'darkorange';
