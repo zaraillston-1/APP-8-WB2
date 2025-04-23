@@ -65,6 +65,7 @@
           // Update the color box background with the detected color
           colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
 
+          // Interpret the color to determine the diagnosis
           const diagnosis = interpretColor(r, g, b);
           result.textContent = `Diagnostic Result: ${diagnosis}`;
 
