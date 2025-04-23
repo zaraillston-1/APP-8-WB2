@@ -34,8 +34,8 @@
   The picture must be taken of essentially only the sample because the program reads the RGB from the middle of the uploaded photo, so if the entire tube is uploaded, it will read as undetermined.
 
 <head>
-  <meta charset="UTF-8"> // Set character encoding to UTF-8 for universal character support
-  <title>LAMP Diagnostic Analyzer</title> // Set the title of the web page shown in the browser tab
+  <meta charset="UTF-8"> /* Set character encoding to UTF-8 for universal character support */
+  <title>LAMP Diagnostic Analyzer</title> /* Set the title of the web page shown in the browser tab */
   <style>
     body { font-family: Arial; text-align: center; padding: 20px; } /* Style the body with font, center alignment, and padding */
     canvas { border: 1px solid #ccc; margin-top: 10px; } /* Add a border and top margin to the canvas element */
@@ -48,26 +48,26 @@
     }
   </style>
 </head>
-<body> // Begin the body of the web page
-  <h1>Colorimetric LAMP Diagnostic Analyzer</h1> // Heading text for the tool
-  <p>Upload a photo of your LAMP test to determine the result.</p> // Instruction for the user
-  <input type="file" id="imageUpload" accept="image/*"><br> // File input to upload images, limited to image files
-  <canvas id="canvas" width="300" height="300"></canvas> // Canvas for drawing the uploaded image
-  <div id="colorBox"></div> // Box to display the detected color
-  <div id="result"></div> // Div to display the analysis result
+<body> /* Begin the body of the web page */
+  <h1>Colorimetric LAMP Diagnostic Analyzer</h1> /* Heading text for the tool */
+  <p>Upload a photo of your LAMP test to determine the result.</p> /* Instruction for the user */
+  <input type="file" id="imageUpload" accept="image/*"><br> /* File input to upload images, limited to image files */
+  <canvas id="canvas" width="300" height="300"></canvas> /* Canvas for drawing the uploaded image */
+  <div id="colorBox"></div> /* Box to display the detected color */
+  <div id="result"></div> /* Div to display the analysis result */
 
 
   <script>
-    const upload = document.getElementById('imageUpload'); // Get the file input element
-    const canvas = document.getElementById('canvas'); // Get the canvas element
-    const ctx = canvas.getContext('2d'); // Get the 2D drawing context of the canvas
-    const result = document.getElementById('result'); // Get the result display element
-    const colorBox = document.getElementById('colorBox'); // Get the color box element
+    const upload = document.getElementById('imageUpload'); /* Get the file input element */
+    const canvas = document.getElementById('canvas'); /* Get the canvas element*/
+    const ctx = canvas.getContext('2d'); /* Get the 2D drawing context of the canvas */
+    const result = document.getElementById('result'); /* Get the result display element */
+    const colorBox = document.getElementById('colorBox'); /* Get the color box element */
 
     upload.addEventListener('change', function () {  /* this item triggers when a file is uploaded */
 
       const file = this.files[0]; /* grabs the first file selected by the user */
-      if (!file) return; // exit early if no file is selected 
+      if (!file) return; /* exit early if no file is selected */ 
 
       const reader = new FileReader(); /* create a filereader object to read the image as a DataURL */
       reader.onload = function (e) {
@@ -76,62 +76,56 @@
           ctx.clearRect(0, 0, canvas.width, canvas.height); /* clear any previous image drawn on the canvas */
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height); /* draw the new image to fill the 300x300 canvas */ 
 
-          const centerX = canvas.width / 2; // set the center point of the canvas to analyze the region around it
+          const centerX = canvas.width / 2; /* set the center point of the canvas to analyze the region around it */
           const centerY = canvas.height / 2;
-          const regionSize = 50; // defines the size of the square region we want to analyze 
-          const imageData = ctx.getImageData(centerX - regionSize / 2, centerY - regionSize / 2, regionSize, regionSize);
-  // extracts the image data from the canvas context at the center square
-  // returned object contains raw RGB values in a flat array
-          const pixels = imageData.data; // access the array of pixel data 
-// accumulators for red, green, and blue channels 
-          let r = 0, g = 0, b = 0;
-// calculate the total number of pixels 
-          const totalPixels = pixels.length / 4;
-// summing up red, green, and blue values 
-          for (let i = 0; i < pixels.length; i += 4) {
-            r += pixels[i]; // red channel 
-            g += pixels[i + 1]; // green channel 
-            b += pixels[i + 2]; // blue channel 
+          const regionSize = 50; /* defines the size of the square region we want to analyze */
+          const imageData = ctx.getImageData(centerX - regionSize / 2, centerY - regionSize / 2, regionSize, regionSize); /* extracts the image data from the canvas context at the center square */
+          const pixels = imageData.data; // access the array of pixel data /* returned object contains raw RGB values in a flat array */
+ 
+          let r = 0, g = 0, b = 0; /* accumulators for red, green, and blue channels */
+
+          const totalPixels = pixels.length / 4; /* calculate the total number of pixels */
+ 
+          for (let i = 0; i < pixels.length; i += 4) {   /* summing up red, green, and blue values */
+            r += pixels[i]; /* red channel */
+            g += pixels[i + 1]; /* green channel */
+            b += pixels[i + 2]; /* blue channel */
           }
-// compute average color values by dividing by total pixels
-          r = Math.round(r / totalPixels);
-          g = Math.round(g / totalPixels);
-          b = Math.round(b / totalPixels);
 
-        console.log(`Average RGB: (${r}, ${g}, ${b})`);  // Log the RGB values
+          r = Math.round(r / totalPixels); /* compute average color values by dividing by total pixels */
+          g = Math.round(g / totalPixels); /* compute average color values by dividing by total pixels */
+          b = Math.round(b / totalPixels); /* compute average color values by dividing by total pixels */
+
+        console.log(`Average RGB: (${r}, ${g}, ${b})`);  /* Log the RGB values */
           
-          // Update the color box background with the detected color
-          colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+          colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`; /* Update the color box background with the detected color */
 
-          // Interpret the color to determine the diagnosis
-          const diagnosis = interpretColor(r, g, b);
-          result.textContent = `Diagnostic Result: ${diagnosis}`; // Show the result text
+          const diagnosis = interpretColor(r, g, b); /* Interpret the color to determine the diagnosis */
+          result.textContent = `Diagnostic Result: ${diagnosis}`; /* Show the result text */
 
-          // Change the text color based on the result
-          if (diagnosis.includes('Yellow')) result.style.color = 'darkorange';
-          else if (diagnosis.includes('Orange')) result.style.color = 'orangered';
-          else if (diagnosis.includes('Pink')) result.style.color = 'deeppink';
-          else result.style.color = 'gray'; // Default for 'uncertain'
+          if (diagnosis.includes('Yellow')) result.style.color = 'darkorange'; /* Change the text color based on the result */
+          else if (diagnosis.includes('Orange')) result.style.color = 'orangered'; /* Change the text color based on the result */
+          else if (diagnosis.includes('Pink')) result.style.color = 'deeppink'; /* Change the text color based on the result */
+          else result.style.color = 'gray'; /* Default for 'uncertain' */
         };
-        img.src = e.target.result;  // Set the image source to the uploaded file
+        img.src = e.target.result;  /* Set the image source to the uploaded file */
       };
-      reader.readAsDataURL(file); // Read the file as a data URL
+      reader.readAsDataURL(file); /* Read the file as a data URL */
     });
-    // Function to interpret RGB values and return a diagnosis 
-    function interpretColor(r, g, b) {
-        // Positive result: high red and green, low blue = Yellow
-      if (r > 180 && g > 180 && b < 130) {
+    function interpretColor(r, g, b) {  /* Function to interpret RGB values and return a diagnosis */
+        
+      if (r > 180 && g > 180 && b < 130) {  /* Positive result: high red and green, low blue = Yellow */
         return 'Positive (Yellow)';
       }
-      // Intermediate result: red high, green medium, blue low = Orange
-      if (r > 180 && g > 120 && g <= 180 && b < 130) {
+      
+      if (r > 180 && g > 120 && g <= 180 && b < 130) {  /* Intermediate result: red high, green medium, blue low = Orange */
         return 'Intermediate (Orange)';
       }
-      // Negative result: high red and blue, low green = Pink
-      if (r > 160 && g < 140 && b > 140) {
+      
+      if (r > 160 && g < 140 && b > 140) {  /* Negative result: high red and blue, low green = Pink */
         return 'Negative (Pink)';
       }
-      return 'Uncertain'; // Default if no condition matches
+      return 'Uncertain'; /* Default if no condition matches */
     }
   </script>
 </body>
