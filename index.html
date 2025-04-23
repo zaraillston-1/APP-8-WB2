@@ -2,7 +2,8 @@
 <html lang="en">
 
   <!-- The following code has been developed by students and/or researchers of the Freshman Research Initiative, DIY Diagnostics Stream at The University of Texas at Austin.  This code is shared for demonstration purposes and should not be considered a product -- it is for entertainment purposes only.  Any user of this code does so at their own risk. Members of the DIY Stream, FRI, and The University of Texas system are not liable for anything related to this code. -->
-  
+
+  <!--
   THIS CODE SHOULD NOT BE USED TO DIAGNOSE ANY KIND OF MEDICAL CONDITION.
   
   Further Information:
@@ -32,10 +33,11 @@
  
   Known Issues:
   The picture must be taken of essentially only the sample because the program reads the RGB from the middle of the uploaded photo, so if the entire tube is uploaded, it will read as undetermined.
-
+  -->
+  
 <head>
-  <meta charset="UTF-8"> /* Set character encoding to UTF-8 for universal character support */
-  <title>LAMP Diagnostic Analyzer</title> /* Set the title of the web page shown in the browser tab */
+  <meta charset="UTF-8"> <!-- Set character encoding to UTF-8 for universal character support -->
+  <title>LAMP Diagnostic Analyzer</title> <!-- Set the title of the web page shown in the browser tab -->
   <style>
     body { font-family: Arial; text-align: center; padding: 20px; } /* Style the body with font, center alignment, and padding */
     canvas { border: 1px solid #ccc; margin-top: 10px; } /* Add a border and top margin to the canvas element */
@@ -48,13 +50,13 @@
     }
   </style>
 </head>
-<body> /* Begin the body of the web page */
-  <h1>Colorimetric LAMP Diagnostic Analyzer</h1> /* Heading text for the tool */
-  <p>Upload a photo of your LAMP test to determine the result.</p> /* Instruction for the user */
-  <input type="file" id="imageUpload" accept="image/*"><br> /* File input to upload images, limited to image files */
-  <canvas id="canvas" width="300" height="300"></canvas> /* Canvas for drawing the uploaded image */
-  <div id="colorBox"></div> /* Box to display the detected color */
-  <div id="result"></div> /* Div to display the analysis result */
+<body> <!-- Begin the body of the web page -->
+  <h1>Colorimetric LAMP Diagnostic Analyzer</h1> <!--  Heading text for the tool -->
+  <p>Upload a photo of your LAMP test to determine the result.</p> <!--  Instruction for the user -->
+  <input type="file" id="imageUpload" accept="image/*"><br> <!--  File input to upload images, limited to image files -->
+  <canvas id="canvas" width="300" height="300"></canvas> <!-- Canvas for drawing the uploaded image -->
+  <div id="colorBox"></div> <!-- Box to display the detected color -->
+  <div id="result"></div> <!-- Div to display the analysis result -->
 
 
   <script>
