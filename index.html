@@ -77,19 +77,19 @@
         };
         img.src = e.target.result;  // Set the image source to the uploaded file
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // Read the file as a data URL
     });
 
     function interpretColor(r, g, b) {
-      // Positive Yellow: bright, high red and green, low blue
+      
       if (r > 180 && g > 180 && b < 130) {
         return 'Positive (Yellow)';
       }
-      // Intermediate Orange: red high, green medium-high, blue low
+
       if (r > 180 && g > 120 && g <= 180 && b < 130) {
         return 'Intermediate (Orange)';
       }
-      // Negative Pink: red high, green low, blue high
+
       if (r > 160 && g < 140 && b > 140) {
         return 'Negative (Pink)';
       }
