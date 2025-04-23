@@ -61,7 +61,8 @@
           b = Math.round(b / totalPixels);
 
           console.log(`Average RGB: (${r}, ${g}, ${b})`);  // Log the RGB values
-
+          
+          // Update the color box background with the detected color
           colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
 
           const diagnosis = interpretColor(r, g, b);
